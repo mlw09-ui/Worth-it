@@ -1669,3 +1669,48 @@ a {
     transition: none !important;
   }
 }
+
+/* ---------- Zakgeldmodus ---------- */
+
+.mode-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-bottom: 20px;
+}
+
+.mode-switch .label {
+  font-size: 0.875rem;
+  font-weight: 550;
+  color: var(--text-muted);
+}
+
+.kid-hint {
+  margin: -10px 0 18px;
+}
+
+.kid-example-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.kid-footnote {
+  margin: 16px 0 0;
+}
+
+.kid-when {
+  margin: 12px 0 0;
+  font-size: 0.9375rem;
+}
+
+.kid-monthly {
+  margin-top: 12px;
+}
+
+.extras.narrow {
+  max-width: 560px;
+}

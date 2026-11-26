@@ -1,47 +1,61 @@
 import { useEffect, useState } from 'react';
 import { BudgetPage } from './pages/BudgetPage';
 import { CartPage } from './pages/CartPage';
+import { ModeSwitch } from './components/ModeSwitch';
 import { ExtrasPage } from './pages/ExtrasPage';
+import { KidCartPage } from './pages/KidCartPage';
+import { KidProfilePage } from './pages/KidProfilePage';
 import { ProfilePage } from './pages/ProfilePage';
 import { useStore } from './state';
-import type { ThemePref } from './lib/types';
+import type { AppMode, ThemePref } from './lib/types';
 
 type Tab = 'werk' | 'budget' | 'mandje' | 'extra';
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'werk', label: 'Mijn werk' },
-  { id: 'budget', label: 'Budget' },
-  { id: 'mandje', label: 'Is het het waard?' },
-  { id: 'extra', label: "Extra's" },
-];
+const TABS: Record<AppMode, { id: Tab; label: string }[]> = {
+  werk: [
+    { id: 'werk', label: 'Mijn werk' },
+    { id: 'budget', label: 'Budget' },
+    { id: 'mandje', label: 'Is het het waard?' },
+    { id: 'extra', label: "Extra's" },
+  ],
+  // Zakgeldmodus: geen budget, simpelere namen.
+  zakgeld: [
+    { id: 'werk', label: 'Mijn geld' },
+    { id: 'mandje', label: 'Kan ik het kopen?' },
+    { id: 'extra', label: "Extra's" },
+  ],
+};
 
-function tabFromHash(): Tab {
-  const h = window.location.hash.replace('#', '');
-  return TABS.some((t) => t.id === h) ? (h as Tab) : 'werk';
+function hashTab(): string {
+  return window.location.hash.replace('#', '');
 }
 
 export function App() {
   const { state, saved, setTheme } = useStore();
-  const [tab, setTab] = useState<Tab>(tabFromHash);
+  const [hash, setHash] = useState(hashTab);
 
   useEffect(() => {
-    const onHash = () => setTab(tabFromHash());
+    const onHash = () => setHash(hashTab());
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
   useResolvedTheme(state.theme);
 
+  const tabs = TABS[state.mode];
+  const tab: Tab = tabs.some((t) => t.id === hash) ? (hash as Tab) : 'werk';
+  const kid = state.mode === 'zakgeld';
+
   return (
     <div className="app">
       <header className="topbar">
         <div className="topbar-inner">
-          <a className="brand" href="#werk" aria-label="Worth It, naar Mijn werk">
+          <a className="brand" href="#werk" aria-label={`Worth It, naar ${tabs[0].label}`}>
             <span className="brand-mark" aria-hidden="true">W</span>
             Worth It
           </a>
           <nav className="tabs" aria-label="Hoofdmenu">
-            {TABS.map((t) => (
+            {tabs.map((t) => (
               <a key={t.id} href={`#${t.id}`} className={t.id === tab ? 'active' : ''} aria-current={t.id === tab ? 'page' : undefined}>
                 {t.label}
               </a>
@@ -57,12 +71,13 @@ export function App() {
             Je gegevens kunnen niet worden opgeslagen in deze browser (bijv. privémodus). Ze verdwijnen als je de pagina sluit.
           </p>
         )}
+        {tab === 'werk' && <ModeSwitch />}
         {tab === 'werk' ? (
-          <ProfilePage />
+          kid ? <KidProfilePage /> : <ProfilePage />
         ) : tab === 'budget' ? (
           <BudgetPage />
         ) : tab === 'mandje' ? (
-          <CartPage />
+          kid ? <KidCartPage /> : <CartPage />
         ) : (
           <ExtrasPage />
         )}

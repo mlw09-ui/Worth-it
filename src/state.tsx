@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { STORAGE_KEY, defaultState, loadState, newId, saveState } from './lib/storage';
-import type { AppState, Profile, ThemePref } from './lib/types';
+import type { AppMode, AppState, KidMoney, Profile, ThemePref } from './lib/types';
 
 type ListKey = 'incomes' | 'expenses' | 'cart';
 type ItemOf<K extends ListKey> = AppState[K][number];
@@ -11,6 +11,8 @@ interface Store {
   saved: boolean;
   updateProfile: (patch: Partial<Profile>) => void;
   setTheme: (theme: ThemePref) => void;
+  setMode: (mode: AppMode) => void;
+  updateKid: (patch: Partial<KidMoney>) => void;
   /** Voegt een item toe en geeft het nieuwe id terug. */
   addItem: <K extends ListKey>(key: K, item: Omit<ItemOf<K>, 'id'>) => string;
   updateItem: <K extends ListKey>(key: K, id: string, patch: Partial<ItemOf<K>>) => void;
@@ -20,7 +22,7 @@ interface Store {
   removeItem: (key: ListKey, id: string) => () => void;
   /** Vervangt alle gegevens (import). */
   replaceState: (next: AppState) => void;
-  /** Wist alles en begint opnieuw. Het thema blijft staan. */
+  /** Wist alles en begint opnieuw. Thema en modus blijven staan. */
   resetAll: () => void;
 }
 
@@ -40,6 +42,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const setTheme = useCallback((theme: ThemePref) => {
     setState((s) => ({ ...s, theme }));
+  }, []);
+
+  const setMode = useCallback((mode: AppMode) => {
+    setState((s) => ({ ...s, mode }));
+  }, []);
+
+  const updateKid = useCallback((patch: Partial<KidMoney>) => {
+    setState((s) => ({ ...s, kid: { ...s.kid, ...patch } }));
   }, []);
 
   const addItem = useCallback(<K extends ListKey>(key: K, item: Omit<ItemOf<K>, 'id'>) => {
@@ -88,12 +98,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     } catch {
       // Opslag niet beschikbaar: de state hieronder wordt toch leeggemaakt.
     }
-    setState((s) => ({ ...defaultState(), theme: s.theme }));
+    setState((s) => ({ ...defaultState(), theme: s.theme, mode: s.mode }));
   }, []);
 
   const value = useMemo(
-    () => ({ state, saved, updateProfile, setTheme, addItem, updateItem, updateAll, removeItem, replaceState, resetAll }),
-    [state, saved, updateProfile, setTheme, addItem, updateItem, updateAll, removeItem, replaceState, resetAll],
+    () => ({ state, saved, updateProfile, setTheme, setMode, updateKid, addItem, updateItem, updateAll, removeItem, replaceState, resetAll }),
+    [state, saved, updateProfile, setTheme, setMode, updateKid, addItem, updateItem, updateAll, removeItem, replaceState, resetAll],
   );
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

@@ -13,6 +13,15 @@ export function ExtrasPage() {
   const { state } = useStore();
   const complete = isProfileComplete(state.profile);
 
+  // Zakgeldmodus: alleen backup en wissen; scenario's en jaaroverzicht gaan over uurloon.
+  if (state.mode === 'zakgeld') {
+    return (
+      <div className="extras narrow">
+        <DataCard />
+      </div>
+    );
+  }
+
   return (
     <div className="extras">
       {!complete && (

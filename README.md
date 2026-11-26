@@ -11,6 +11,14 @@ Geen backend en geen accounts: alle gegevens staan in `localStorage`, op het app
 - **Is het het waard?**: snelle check (prijs → werktijd) en een winkelmandje met aan/uit-vinkjes, menselijke vergelijkingen, spaardoel en "naar budget".
 - **Extra's**: scenario's (meer verdienen, abonnementen opzeggen), jaaroverzicht per categorie, backup downloaden/terugzetten (JSON) en alles wissen.
 
+### Zakgeldmodus (voor kinderen)
+
+Bovenaan **Mijn werk** kies je "Zakgeld en klusjes". De app wordt dan simpeler:
+
+- **Mijn geld**: zakgeld (per week of maand), geld per klusje, klusjes per maand en wat al in de spaarpot zit. Niets is verplicht.
+- **Kan ik het kopen?**: typ een prijs en zie hoe lang je moet sparen, hoeveel klusjes het is en rond welke datum je het kunt kopen. Met een verlanglijstje om dingen aan en uit te vinken, ook voor dingen die je elke maand betaalt.
+- Geen budget, scenario's of jaaroverzicht; backup en wissen blijven.
+
 ## Ontwikkelen
 
 Vereist Node.js 20 of nieuwer.

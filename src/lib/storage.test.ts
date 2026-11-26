@@ -43,6 +43,22 @@ describe('sanitizeState', () => {
     expect(s.expenses[1].id).not.toBe('b');
   });
 
+  it('standaard in werkmodus, met leeg zakgeld', () => {
+    const s = sanitizeState({});
+    expect(s.mode).toBe('werk');
+    expect(s.kid).toEqual({ allowance: 0, allowanceFrequency: 'maand', choreRate: 0, choresPerMonth: 0, savings: 0 });
+  });
+
+  it('valideert de zakgeldmodus', () => {
+    const s = sanitizeState({
+      mode: 'zakgeld',
+      kid: { allowance: 5, allowanceFrequency: 'week', choreRate: 'veel', choresPerMonth: 4, savings: -3 },
+    });
+    expect(s.mode).toBe('zakgeld');
+    expect(s.kid).toEqual({ allowance: 5, allowanceFrequency: 'week', choreRate: 0, choresPerMonth: 4, savings: 0 });
+    expect(sanitizeState({ mode: 'raar' }).mode).toBe('werk');
+  });
+
   it('valideert het winkelmandje', () => {
     const s = sanitizeState({
       cart: [

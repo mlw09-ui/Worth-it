@@ -1,4 +1,4 @@
-import type { AppState, CartItem, Category, Expense, Frequency, Income, Profile, ThemePref } from './types';
+import type { AppState, CartItem, Category, Expense, Frequency, Income, KidMoney, Profile, ThemePref } from './types';
 
 export const STORAGE_KEY = 'worth-it:v1';
 
@@ -12,9 +12,19 @@ export const DEFAULT_PROFILE: Profile = {
   useRealWage: false,
 };
 
+export const DEFAULT_KID: KidMoney = {
+  allowance: 0,
+  allowanceFrequency: 'maand',
+  choreRate: 0,
+  choresPerMonth: 0,
+  savings: 0,
+};
+
 export function defaultState(): AppState {
   return {
     version: 1,
+    mode: 'werk',
+    kid: { ...DEFAULT_KID },
     profile: { ...DEFAULT_PROFILE },
     incomes: [],
     expenses: [],
@@ -118,8 +128,19 @@ export function sanitizeState(raw: unknown): AppState {
 
   const theme: ThemePref = r.theme === 'light' || r.theme === 'dark' ? r.theme : 'system';
 
+  const k = (r.kid && typeof r.kid === 'object' ? r.kid : {}) as Record<string, unknown>;
+  const kid: KidMoney = {
+    allowance: num(k.allowance, 0, 0, 100_000),
+    allowanceFrequency: k.allowanceFrequency === 'week' ? 'week' : 'maand',
+    choreRate: num(k.choreRate, 0, 0, 100_000),
+    choresPerMonth: num(k.choresPerMonth, 0, 0, 1000),
+    savings: num(k.savings, 0, 0, MAX_AMOUNT),
+  };
+
   return {
     ...base,
+    mode: r.mode === 'zakgeld' ? 'zakgeld' : 'werk',
+    kid,
     profile,
     incomes: list(r.incomes, sanitizeIncome),
     expenses: list(r.expenses, sanitizeExpense),

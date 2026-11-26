@@ -56,8 +56,25 @@ export interface CartItem {
 
 export type ThemePref = 'system' | 'light' | 'dark';
 
+/** 'werk' = volwassene met uurloon, 'zakgeld' = simpele modus voor kinderen. */
+export type AppMode = 'werk' | 'zakgeld';
+
+/** Geld van een kind: zakgeld, klusjes en wat al in de spaarpot zit. */
+export interface KidMoney {
+  allowance: number;
+  allowanceFrequency: 'week' | 'maand';
+  /** Wat je verdient per klusje. */
+  choreRate: number;
+  /** Ongeveer hoeveel klusjes per maand. */
+  choresPerMonth: number;
+  /** Al gespaard. */
+  savings: number;
+}
+
 export interface AppState {
   version: 1;
+  mode: AppMode;
+  kid: KidMoney;
   profile: Profile;
   incomes: Income[];
   expenses: Expense[];
